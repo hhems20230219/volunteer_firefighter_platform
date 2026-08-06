@@ -1,0 +1,72 @@
+[
+  {
+    "nationalId": "E123714468",
+    "brigade": "第一救護大隊",
+    "unit": "新興分隊",
+    "department": "分隊部",
+    "title": "幹事",
+    "name": "吳宇樺",
+    "gender": "男",
+    "birthDate": "1989-09-26",
+    "emtLevel": "EMT-1",
+    "phone": "0983186098",
+    "active": true,
+    "joinDate": "2023-09-01"
+  },
+  {
+    "nationalId": "A223456789",
+    "brigade": "第一救護大隊",
+    "unit": "新興分隊",
+    "department": "救護組",
+    "title": "隊員",
+    "name": "陳怡君",
+    "gender": "女",
+    "birthDate": "1992-04-18",
+    "emtLevel": "EMT-2",
+    "phone": "0911222333",
+    "active": true,
+    "joinDate": "2022-03-15"
+  },
+  {
+    "nationalId": "B123456789",
+    "brigade": "第一救護大隊",
+    "unit": "新興分隊",
+    "department": "救護組",
+    "title": "小隊長",
+    "name": "林志豪",
+    "gender": "男",
+    "birthDate": "1985-02-10",
+    "emtLevel": "EMT-1",
+    "phone": "0922333444",
+    "active": true,
+    "joinDate": "2018-01-10"
+  },
+  {
+    "nationalId": "C223456789",
+    "brigade": "第一救護大隊",
+    "unit": "新興分隊",
+    "department": "救護組",
+    "title": "隊員",
+    "name": "黃美玲",
+    "gender": "女",
+    "birthDate": "1990-07-22",
+    "emtLevel": "EMT-1",
+    "phone": "0933444555",
+    "active": true,
+    "joinDate": "2020-05-01"
+  },
+  {
+    "nationalId": "D123456789",
+    "brigade": "第一救護大隊",
+    "unit": "新興分隊",
+    "department": "救護組",
+    "title": "隊員",
+    "name": "張家豪",
+    "gender": "男",
+    "birthDate": "1997-11-08",
+    "emtLevel": "EMT-1",
+    "phone": "0944555666",
+    "active": true,
+    "joinDate": "2024-06-01"
+  }
+]

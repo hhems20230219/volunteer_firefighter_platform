@@ -1,0 +1,22 @@
+[
+  {
+    "name": "新進人員基本訓練",
+    "description": "§10 入隊後三年內應完成新進人員基本訓練。",
+    "basisPersonField": "joinDate",
+    "basisPersonFieldName": "入隊日期",
+    "completionWithinYears": 3,
+    "lawName": "義勇消防組織編組訓練演習服勤辦法",
+    "lawUrl": "https://law.nfa.gov.tw/MOBILE/law.aspx?LSID=FL005073"
+  },
+  {
+    "name": "基礎幹部講習班",
+    "description": "§12.4 已完成新進人員基本訓練後，三年內應完成基礎幹部講習班。",
+    "requiredTraining": [
+      "新進人員基本訓練"
+    ],
+    "basisTraining": "新進人員基本訓練",
+    "completionWithinYears": 3,
+    "lawName": "義勇消防組織編組訓練演習服勤辦法",
+    "lawUrl": "https://law.nfa.gov.tw/MOBILE/law.aspx?LSID=FL005073"
+  }
+]

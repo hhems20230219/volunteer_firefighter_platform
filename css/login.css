@@ -1,0 +1,17 @@
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #72131f 0%, #9f1d2d 48%, #f8d7da 100%);
+}
+.login-card { max-width: 30rem; }
+.login-icon {
+    width: 5rem;
+    height: 5rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: linear-gradient(135deg, #72131f, #b02a37);
+    font-size: 2rem;
+}

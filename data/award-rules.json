@@ -1,0 +1,19 @@
+[
+  {
+    "name": "內政部消防署全國消防楷模",
+    "description": "服務年資須滿 5 年。",
+    "minServiceMonths": 60,
+    "lawName": "內政部消防署全國消防楷模甄選表揚實施規定",
+    "lawUrl": "https://law.nfa.gov.tw/MOBILE/law.aspx?LSID=FL029281",
+    "manualReviewNote": "系統僅自動判斷服務年資；其他甄選與審查條件仍須由承辦單位確認。"
+  },
+  {
+    "name": "內政部消防署全國救護志工菁英",
+    "description": "服務年資須滿 5 年、累計出勤時數須滿 1000 小時。",
+    "minServiceMonths": 60,
+    "minTotalDutyHours": 1000,
+    "lawName": "內政部消防署全國救護志工菁英甄選表揚實施規定",
+    "lawUrl": "https://law.nfa.gov.tw/MOBILE/law.aspx?LSID=FL060960",
+    "manualReviewNote": "系統自動判斷服務年資與累計出勤時數；其他甄選與審查條件仍須由承辦單位確認。"
+  }
+]

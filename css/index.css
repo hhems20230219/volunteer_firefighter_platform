@@ -1,0 +1,20 @@
+.hero { background: linear-gradient(135deg, #fff, #fff1f2); }
+.announcement-item + .announcement-item { border-top: 1px solid var(--app-border); }
+
+
+/* v32：公告超過三筆時在卡片內捲動。 */
+#announcementList.announcement-scroll {
+    max-height: 20.5rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: .35rem;
+}
+
+.announcement-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-top: .5rem;
+    font-weight: 600;
+    text-decoration: none;
+}

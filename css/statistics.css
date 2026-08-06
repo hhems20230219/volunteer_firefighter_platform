@@ -1,0 +1,25 @@
+
+.metric-card {
+    border-left: .35rem solid var(--app-primary) !important;
+}
+
+.metric-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .75rem;
+    background: #f8e7ea;
+    color: var(--app-primary);
+    font-size: 1.1rem;
+}
+
+.shortage-item {
+    padding: .8rem 0;
+    border-bottom: 1px solid var(--app-border);
+}
+
+.shortage-item:last-child {
+    border-bottom: 0;
+}

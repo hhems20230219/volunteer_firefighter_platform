@@ -1,0 +1,50 @@
+[
+  {
+    "nationalId": "E123714468",
+    "name": "吳宇樺",
+    "trainingItem": "素行調查",
+    "completionDate": "2023-02-01",
+    "expiryDate": "",
+    "note": ""
+  },
+  {
+    "nationalId": "E123714468",
+    "name": "吳宇樺",
+    "trainingItem": "新進人員基本訓練",
+    "completionDate": "2023-06-01",
+    "expiryDate": "",
+    "note": "於素行調查後 2 年內完成"
+  },
+  {
+    "nationalId": "E123714468",
+    "name": "吳宇樺",
+    "trainingItem": "基礎幹部講習班",
+    "completionDate": "2024-03-01",
+    "expiryDate": "",
+    "note": "於素行調查後 3 年內完成"
+  },
+  {
+    "nationalId": "A223456789",
+    "name": "陳怡君",
+    "trainingItem": "素行調查",
+    "completionDate": "2025-03-01",
+    "expiryDate": "",
+    "note": ""
+  },
+  {
+    "nationalId": "B123456789",
+    "name": "林志豪",
+    "trainingItem": "素行調查",
+    "completionDate": "2021-01-15",
+    "expiryDate": "",
+    "note": "已逾新進訓練與基礎幹部講習班期限"
+  },
+  {
+    "nationalId": "C223456789",
+    "name": "黃美玲",
+    "trainingItem": "素行調查",
+    "completionDate": "2025-07-01",
+    "expiryDate": "",
+    "note": "仍在完成期限內"
+  }
+]

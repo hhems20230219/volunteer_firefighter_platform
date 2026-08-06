@@ -1,0 +1,58 @@
+[
+  {
+    "nationalId": "E123714468",
+    "name": "吳宇樺",
+    "date": "2023-09-01",
+    "recordType": "入隊",
+    "content": "加入新興分隊",
+    "note": ""
+  },
+  {
+    "nationalId": "E123714468",
+    "name": "吳宇樺",
+    "date": "2025-01-01",
+    "recordType": "職務異動",
+    "content": "擔任分隊部幹事",
+    "note": ""
+  },
+  {
+    "nationalId": "A223456789",
+    "name": "陳怡君",
+    "date": "2022-03-15",
+    "recordType": "入隊",
+    "content": "加入新興分隊",
+    "note": ""
+  },
+  {
+    "nationalId": "B123456789",
+    "name": "林志豪",
+    "date": "2018-01-10",
+    "recordType": "入隊",
+    "content": "加入新興分隊",
+    "note": ""
+  },
+  {
+    "nationalId": "B123456789",
+    "name": "林志豪",
+    "date": "2024-01-01",
+    "recordType": "職務異動",
+    "content": "擔任小隊長",
+    "note": ""
+  },
+  {
+    "nationalId": "C223456789",
+    "name": "黃美玲",
+    "date": "2020-05-01",
+    "recordType": "入隊",
+    "content": "加入新興分隊",
+    "note": ""
+  },
+  {
+    "nationalId": "D123456789",
+    "name": "張家豪",
+    "date": "2024-06-01",
+    "recordType": "入隊",
+    "content": "加入新興分隊",
+    "note": "新進人員"
+  }
+]

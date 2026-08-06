@@ -1,0 +1,269 @@
+:root {
+    --app-primary: #9f1d2d;
+    --app-primary-dark: #72131f;
+    --app-bg: #f4f6f9;
+    --app-border: #dee2e6;
+}
+body { background: var(--app-bg); color: #212529; padding-bottom: 0; }
+.app-navbar { background: linear-gradient(135deg, var(--app-primary-dark), var(--app-primary)); }
+.app-navbar .nav-link.active { font-weight: 700; color: #fff; border-bottom: 2px solid #fff; }
+.page-header { border-left: .35rem solid var(--app-primary); }
+.function-card { transition: transform .2s ease, box-shadow .2s ease; text-decoration: none; color: inherit; }
+.function-card:hover { transform: translateY(-4px); box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.1)!important; }
+.icon-circle { width: 3rem; height: 3rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
+.mobile-app-footer { display: none; }
+.status-dot { width: .65rem; height: .65rem; border-radius: 50%; display: inline-block; }
+.data-source-badge { position: fixed; right: 1rem; bottom: 1rem; z-index: 1040; }
+@media (max-width: 767.98px) {
+    body { padding-bottom: 5.25rem; }
+    .app-navbar { display: block; }
+    .app-navbar .navbar-toggler,
+    .app-navbar .navbar-collapse { display: none !important; }
+    .app-navbar .navbar-brand { display: inline-flex; align-items: center; max-width: calc(100vw - 2rem); font-size: 1rem; white-space: nowrap; }
+    .mobile-app-footer {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 1045;
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        background: #fff; border-top: 1px solid var(--app-border); box-shadow: 0 -.25rem 1rem rgba(0,0,0,.08);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    .mobile-app-footer a { min-height: 4.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem; text-decoration: none; color: #6c757d; font-size: .78rem; }
+    .mobile-app-footer a i { font-size: 1.25rem; }
+    .mobile-app-footer a.active { color: var(--app-primary); font-weight: 700; }
+    .data-source-badge { bottom: 5.2rem; }
+}
+
+.access-role-badge {
+    position: fixed;
+    right: 1rem;
+    bottom: 3.25rem;
+    z-index: 1040;
+}
+
+.access-denied-card {
+    max-width: 42rem;
+    margin: 0 auto;
+}
+
+.access-denied-icon {
+    width: 4.5rem;
+    height: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f8d7da;
+    color: var(--app-primary);
+    font-size: 1.75rem;
+}
+
+@media (max-width: 767.98px) {
+    .access-role-badge {
+        bottom: 7.7rem;
+    }
+}
+
+
+.form-control[readonly] {
+    background-color: var(--bs-secondary-bg) !important;
+    color: var(--bs-body-color);
+    opacity: 1;
+}
+
+
+/* DataTables Responsive：獨立控制欄，保留純黑展開符號且不遮蔽第一個資料欄。 */
+table.dataTable th.dtr-control-column,
+table.dataTable td.dtr-control {
+    width: 1.75rem !important;
+    min-width: 1.75rem !important;
+    max-width: 1.75rem !important;
+    padding-left: .35rem !important;
+    padding-right: .35rem !important;
+    text-align: center;
+    background: transparent !important;
+}
+
+table.dataTable.dtr-column.collapsed > tbody > tr > td.dtr-control::before {
+    content: '›' !important;
+    display: inline-block !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    color: #000 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-size: 1.25rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    transform: rotate(0deg);
+}
+
+table.dataTable.dtr-column.collapsed > tbody > tr.dtr-expanded > td.dtr-control::before {
+    transform: rotate(90deg);
+}
+
+table.dataTable:not(.collapsed) th.dtr-control-column,
+table.dataTable:not(.collapsed) td.dtr-control {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+}
+
+
+.mobile-user-summary {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .app-navbar .container {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 1rem;
+        width: 100%;
+        max-width: 100%;
+        padding-top: .55rem;
+        padding-bottom: .55rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+
+    .app-navbar .container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .app-navbar .navbar-brand {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        width: auto;
+        max-width: none;
+        margin-right: auto;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 800 !important;
+        line-height: 1.5;
+        white-space: nowrap;
+    }
+
+    .app-navbar .navbar-brand i {
+        flex: 0 0 auto;
+        margin-right: .5rem !important;
+        font-size: 1rem;
+    }
+
+    .mobile-user-summary {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: flex-end;
+        gap: .75rem;
+        margin-left: auto;
+        color: #fff;
+        font-size: 1rem;
+        line-height: 1.5;
+        white-space: nowrap;
+    }
+
+    .mobile-user-summary-item {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: .3rem;
+        color: #fff;
+    }
+
+    .mobile-user-summary-item i {
+        flex: 0 0 auto;
+        color: #fff;
+        font-size: 1rem;
+    }
+
+    .mobile-logout-btn {
+        flex: 0 0 auto;
+        margin-left: 0;
+        padding: .25rem .6rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: .375rem;
+        white-space: nowrap;
+    }
+}
+
+/* v31：桌面與縮小版 Navbar 明確分流 */
+.desktop-navbar-content {
+    gap: .25rem;
+    white-space: nowrap;
+}
+
+.desktop-navbar-content .nav-link,
+.desktop-navbar-content .navbar-text {
+    color: rgba(255, 255, 255, .9);
+}
+
+.desktop-navbar-content .nav-link.active {
+    color: #fff;
+    font-weight: 700;
+    border-bottom: 2px solid #fff;
+}
+
+.mobile-navbar-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .75rem;
+    color: #fff;
+    white-space: nowrap;
+    font-size: 1rem;
+}
+
+.mobile-navbar-info {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    color: #fff;
+}
+
+.mobile-navbar-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 991.98px) {
+    .app-navbar .container-fluid {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 1rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scrollbar-width: none;
+        padding-top: .55rem;
+        padding-bottom: .55rem;
+    }
+
+    .app-navbar .container-fluid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .app-navbar .navbar-brand {
+        flex: 0 0 auto;
+        margin-right: auto;
+        font-size: 1rem;
+        font-weight: 800 !important;
+        white-space: nowrap;
+    }
+
+    .mobile-navbar-content {
+        flex: 0 0 auto;
+    }
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   隊務統計｜義消隊務管理平台
+  </title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+  <link href="https://cdn.datatables.net/responsive/3.0.8/css/responsive.bootstrap5.min.css" rel="stylesheet"/>
+  <link href="css/common.css" rel="stylesheet"/>
+  <link href="css/statistics.css" rel="stylesheet"/>
+ </head>
+ <body data-page="statistics">
+  <div id="navbarHost">
+  </div>
+  <main class="py-4 py-lg-5">
+   <div class="container">
+    <header class="page-header ps-3 mb-4">
+     <h1 class="h2 fw-bold">
+      隊務統計
+     </h1>
+     <p class="text-secondary mb-0">
+      顯示自訂隊務指標、不足人員名單與個人勤務統計明細。
+     </p>
+    </header>
+    <section class="card border-0 shadow-sm mb-4">
+     <div class="card-body p-4">
+      <div class="row g-3">
+       <div class="col-6">
+        <label class="form-label fw-semibold">
+         年度
+        </label>
+        <select class="form-select" id="yearFilter">
+        </select>
+       </div>
+       <div class="col-6">
+        <label class="form-label fw-semibold">
+         月份
+        </label>
+        <select class="form-select" id="monthFilter">
+         <option value="">
+          全年
+         </option>
+        </select>
+       </div>
+       <div class="col-12 d-flex align-items-end">
+        <button class="btn btn-danger w-100" id="applyFilterBtn">
+         <i class="fa-solid fa-filter me-1">
+         </i>
+         套用篩選
+        </button>
+       </div>
+      </div>
+     </div>
+    </section>
+    <section class="mb-4">
+     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+      <div>
+       <h2 class="h4 fw-bold mb-1">隊務指標</h2>
+      </div>
+     </div>
+     <div class="row g-3" id="statisticsKpis"></div>
+    </section>
+    <section class="row g-3 mb-4">
+     <div class="col-12 col-lg-6">
+      <article class="card border-0 shadow-sm h-100">
+       <div class="card-body p-4">
+        <h2 class="h5 fw-bold"><i class="fa-solid fa-person-chalkboard me-2"></i>常年訓練不足人員</h2>
+        <div id="trainingInsufficientList"></div>
+       </div>
+      </article>
+     </div>
+     <div class="col-12 col-lg-6">
+      <article class="card border-0 shadow-sm h-100">
+       <div class="card-body p-4">
+        <h2 class="h5 fw-bold"><i class="fa-solid fa-clock me-2"></i>協勤時數不足人員</h2>
+        <div id="cooperationInsufficientList"></div>
+       </div>
+      </article>
+     </div>
+    </section>
+    <section class="card border-0 shadow-sm">
+     <div class="card-body p-4">
+      <h2 class="h4 fw-bold mb-3">個人勤務統計明細</h2>
+      <div class="data-table-container">
+       <table class="table table-hover nowrap w-100" id="statisticsTable">
+        <thead>
+         <tr>
+          <th class="dtr-control-column" aria-label="展開明細"></th>
+                                                <th>姓名</th>
+          <th>協勤時數</th>
+          <th>訓練出席</th>
+          <th>訓練請假</th>
+          <th>公差時數</th>
+          <th>總時數</th>
+         </tr>
+        </thead>
+        <tbody></tbody>
+       </table>
+      </div>
+     </div>
+    </section>
+   </div>
+  </main>
+  <div id="footerHost">
+  </div>
+  <script src="https://code.jquery.com/jquery-4.0.0.min.js">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+  </script>
+  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js">
+  </script>
+  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.bootstrap5.min.js">
+  </script>
+  <script src="https://cdn.datatables.net/responsive/3.0.8/js/dataTables.responsive.min.js">
+  </script>
+  <script src="https://cdn.datatables.net/responsive/3.0.8/js/responsive.bootstrap5.min.js">
+  </script>
+  <script src="config.js">
+  </script>
+  <script src="js/common.js">
+  </script>
+  <script src="js/data-service.js">
+  </script>
+  <script src="js/statistics.js">
+  </script>
+ </body>
+</html>

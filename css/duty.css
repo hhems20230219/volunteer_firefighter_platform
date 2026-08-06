@@ -1,0 +1,210 @@
+.duty-type-btn {
+    min-height: 9rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: .75rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+.duty-type-btn i { display: block; width: 100%; font-size: 2rem; color: var(--app-primary); text-align: center; }
+.duty-type-btn span { display: block; width: 100%; text-align: center; }
+.duty-type-btn:hover { border-color: var(--app-primary); background: #fff7f7; }
+#signatureCanvas { width: 100%; height: 180px; border: 1px dashed #adb5bd; border-radius: .5rem; background: #fff; touch-action: none; }
+.location-panel { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: .75rem; }
+#dutyModal .modal-dialog { max-height: calc(100vh - 1rem); margin-top: .5rem; margin-bottom: .5rem; }
+#dutyModal .modal-content { max-height: calc(100vh - 1rem); }
+#dutyModal .modal-body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 767.98px) {
+    #dutyModal .modal-dialog { margin: 0; max-height: 100vh; min-height: 100vh; }
+    #dutyModal .modal-content { min-height: 100vh; max-height: 100vh; border-radius: 0; padding-bottom: 4.75rem; }
+    #dutyModal .modal-footer { position: sticky; bottom: 0; z-index: 2; background: #fff; }
+}
+
+
+/* Bootstrap scrollable modal: form participates in the flex layout. */
+#dutyModal .modal-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#dutyModal #dutyForm {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+#dutyModal .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    padding-bottom: 2rem;
+}
+
+#dutyModal .modal-footer {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 767.98px) {
+    #dutyModal .modal-content {
+        height: 100dvh;
+        min-height: 100dvh;
+        max-height: 100dvh;
+        padding-bottom: 0;
+    }
+
+    #dutyModal .modal-body {
+        padding-bottom: 6rem;
+    }
+
+    #dutyModal .modal-footer {
+        position: relative;
+        bottom: auto;
+    }
+}
+
+#pendingDutySection {
+    border-left: .35rem solid #ffc107 !important;
+}
+
+#pendingDutyContent .badge {
+    font-size: .8rem;
+}
+
+
+.operation-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.85rem;
+    background: var(--bs-tertiary-bg);
+}
+
+.operation-heading-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(220, 53, 69, 0.12);
+    color: var(--bs-danger);
+    font-size: 1.15rem;
+}
+
+
+#personTitle.form-control[readonly] {
+    background-color: #e9ecef !important;
+    color: #495057 !important;
+    border-color: #ced4da !important;
+    cursor: not-allowed;
+}
+
+
+/* v26：勤務簽到／簽退雙欄固定左右各 50%，所有畫面寬度皆不改成上下排列。 */
+#dutyModal .paired-field {
+    flex: 0 0 50%;
+    width: 50%;
+    max-width: 50%;
+}
+
+#dutyModal #checkInSection > .row > .paired-field,
+#dutyModal #checkOutSection > .row > .paired-field {
+    flex: 0 0 50%;
+    width: 50%;
+    max-width: 50%;
+}
+
+@media (max-width: 575.98px) {
+    #dutyModal .row {
+        --bs-gutter-x: .75rem;
+    }
+}
+
+
+/* v28：勤務時鐘、年月篩選與簡潔定位狀態。 */
+.duty-clock {
+    min-width: 11rem;
+    padding: .8rem 1rem;
+    color: #000;
+    text-align: center;
+    font-weight: 800;
+}
+
+.duty-clock-time {
+    color: #000;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: .04em;
+}
+
+.duty-clock-date {
+    margin-top: .35rem;
+    color: #000;
+    font-size: .9rem;
+    font-weight: 800;
+}
+
+.duty-filter-row {
+    width: min(100%, 24rem);
+}
+
+.operation-title {
+    display: flex;
+    align-items: center;
+}
+
+.location-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    background: var(--bs-tertiary-bg);
+}
+
+#locationStatusBadge {
+    font-size: .85rem;
+}
+
+@media (max-width: 575.98px) {
+    .duty-filter-row {
+        width: 100%;
+    }
+
+    .location-status-row {
+        align-items: center;
+    }
+}
+
+
+/* v32：手機版時鐘改為黑底白字、置中與粗體。 */
+@media (max-width: 767.98px) {
+    .duty-clock {
+        width: 100%;
+        min-width: 0;
+        padding: .85rem 1rem;
+        color: #fff;
+        background: #000;
+        border-radius: .75rem;
+        text-align: center;
+        font-weight: 900;
+    }
+
+    .duty-clock-time,
+    .duty-clock-date {
+        color: #fff;
+        text-align: center;
+        font-weight: 900;
+    }
+}
