@@ -2,7 +2,7 @@ window.AppConfig = Object.freeze({
     USE_ONLINE_DATA: true,
     API_BASE_URL: 'window.AppConfig = Object.freeze({
     USE_ONLINE_DATA: true,
-    API_BASE_URL: 'https://script.google.com/macros/s/AKfycbxbhdI4Tr73CPKbhEeD-Ndxosg82x1IRhr2MaNUcLqx5KEUtlE2sR86hh_mHeeII5OW/exec',
+    API_BASE_URL: 'https://script.google.com/macros/s/AKfycbzi85oiM6xItQAS46BxcdQOCCzIb4sWiAfif9ScyCKq3i69zuAVY-Ulf8J3MpQTL4Ls/exec',
     API_TIMEOUT_MS: 30000,
 
     AUTH_STORAGE_KEY: 'volunteerFirefighterAuth',
