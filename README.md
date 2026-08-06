@@ -1,3 +1,41 @@
+# 義消隊務管理平台（Google Sheet CRUD API 版）
+
+## 線上資料模式
+
+本版本已包含 `google-apps-script/` 後端，可將前端資料改為 Google Sheet。
+
+前端 `config.js`：
+
+```javascript
+USE_ONLINE_DATA: true,
+API_BASE_URL: '你的 Google Apps Script Web App /exec 網址'
+```
+
+### API 權限
+
+- Announcements：R
+- Persons：R
+- Duties：CRUD
+- Training：R
+- MemberRecords：R
+- Awards：R
+- TrainingRules：R
+- AwardRules：R
+- Certificates：R
+
+### 部署步驟
+
+1. 建立 Google Sheet，開啟「擴充功能 → Apps Script」。
+2. 複製 `google-apps-script/Code.gs`、`Setup.gs`、`SampleData.gs`、`appsscript.json`。
+3. 執行 `setupSheets()` 建立所有工作表與標頭。
+4. 需要目前範例資料時執行 `seedSampleData(false)`；若要清除後重建則執行 `seedSampleData(true)`。
+5. 部署為 Web App，執行身分選擇部署者，存取權限依內部環境設定。
+6. 將 `/exec` 網址填入 `config.js`，並將 `USE_ONLINE_DATA` 改為 `true`。
+
+詳細說明請見 `google-apps-script/README.md`。
+
+---
+
 # 義消隊務管理平台（前端範例）
 
 ## 資料來源切換

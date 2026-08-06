@@ -1,6 +1,7 @@
 window.AppConfig = Object.freeze({
     USE_ONLINE_DATA: false,
     API_BASE_URL: 'https://script.google.com/macros/s/REPLACE_WITH_DEPLOYMENT_ID/exec',
+    API_TIMEOUT_MS: 30000,
 
     AUTH_STORAGE_KEY: 'volunteerFirefighterAuth',
     SAMPLE_DATA_VERSION: '2026.08.06-v15',
