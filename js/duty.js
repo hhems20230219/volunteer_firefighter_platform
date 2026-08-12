@@ -756,7 +756,13 @@ $(() => {
                 originalName: row.name,
                 originalCreatedAt: row.createdAt
             });
-            await load();
+
+            duties = duties.filter(item => !(
+                item.nationalId === row.nationalId
+                && item.createdAt === row.createdAt
+            ));
+            DataService.setCachedData('getDuties', duties);
+            render();
         });
 
     $('#dutyForm').on('submit', async event => {
@@ -790,13 +796,32 @@ $(() => {
         setSubmitState(true);
 
         try {
-            await DataService.request(action, {
+            const savedRecord = await DataService.request(action, {
                 originalNationalId: record.nationalId,
                 originalName: record.name,
                 originalCreatedAt: $('#originalCreatedAt').val(),
                 record
             });
 
+            if (isCreate) {
+                duties.push(savedRecord || record);
+            } else {
+                const originalCreatedAt = $('#originalCreatedAt').val();
+                const index = duties.findIndex(item => (
+                    item.nationalId === record.nationalId
+                    && item.createdAt === originalCreatedAt
+                ));
+
+                if (index >= 0) {
+                    duties[index] = savedRecord || record;
+                } else {
+                    // API 已成功時，不因前端暫存找不到舊項目而再次打 API；直接補回最新紀錄。
+                    duties.push(savedRecord || record);
+                }
+            }
+
+            DataService.setCachedData('getDuties', duties);
+            render();
             modal.hide();
 
             showOperationResult({
@@ -804,17 +829,6 @@ $(() => {
                 title: `${submittedLabel}成功`,
                 message: `${submittedPerson?.name || record.name || '人員'} 已於 ${submittedDate || '-'} ${submittedTime || '-'} 完成${submittedLabel}。`
             });
-
-            try {
-                await load();
-            } catch (refreshError) {
-                console.error('[Duty] 勤務已儲存，但重新載入資料失敗', refreshError);
-                showOperationResult({
-                    success: false,
-                    title: `${submittedLabel}已完成，但畫面更新失敗`,
-                    message: `資料已送出，重新載入失敗：${refreshError.message}。請重新整理頁面確認。`
-                });
-            }
         } catch (error) {
             console.error(`[Duty] ${submittedLabel}失敗`, error);
             showOperationResult({

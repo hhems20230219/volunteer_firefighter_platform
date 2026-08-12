@@ -20,7 +20,7 @@ window.DataService = (() => {
     const readActions = new Set(Object.keys(files));
     const memoryCache = new Map();
     const inFlightRequests = new Map();
-    const personsSessionCacheKey = 'vf_cache_getPersons';
+    const sessionCachePrefix = 'vf_cache_';
 
     async function getSample(action) {
         if (!files[action]) {
@@ -66,38 +66,53 @@ window.DataService = (() => {
         return $.getJSON(`data/${files[action]}`);
     }
 
-    function getPersonsSessionCache() {
+    function sessionCacheKey(action) {
+        return `${sessionCachePrefix}${action}`;
+    }
+
+    function cacheTtl(action) {
+        if (action === 'getPersons') {
+            return Number(AppConfig.PERSON_CACHE_TTL_MS) || 300000;
+        }
+        return Number(AppConfig.READ_CACHE_TTL_MS) || 30000;
+    }
+
+    function getSessionCache(action) {
+        if (!readActions.has(action)) {
+            return null;
+        }
+
         try {
-            const cached = JSON.parse(sessionStorage.getItem(personsSessionCacheKey) || 'null');
+            const key = sessionCacheKey(action);
+            const cached = JSON.parse(sessionStorage.getItem(key) || 'null');
             if (!cached || !Array.isArray(cached.data) || !cached.savedAt) {
                 return null;
             }
 
-            const ttl = Number(AppConfig.PERSON_CACHE_TTL_MS) || 300000;
-            if (Date.now() - Number(cached.savedAt) > ttl) {
-                sessionStorage.removeItem(personsSessionCacheKey);
+            if (Date.now() - Number(cached.savedAt) > cacheTtl(action)) {
+                sessionStorage.removeItem(key);
                 return null;
             }
 
             return cached.data;
         } catch {
-            sessionStorage.removeItem(personsSessionCacheKey);
+            sessionStorage.removeItem(sessionCacheKey(action));
             return null;
         }
     }
 
-    function setPersonsSessionCache(rows) {
-        if (!Array.isArray(rows)) {
+    function setSessionCache(action, rows) {
+        if (!readActions.has(action) || !Array.isArray(rows)) {
             return;
         }
 
         try {
-            sessionStorage.setItem(personsSessionCacheKey, JSON.stringify({
+            sessionStorage.setItem(sessionCacheKey(action), JSON.stringify({
                 savedAt: Date.now(),
                 data: rows
             }));
         } catch (error) {
-            debugLog('人員主檔 session 快取寫入失敗，忽略快取', error);
+            debugLog(`${action} session 快取寫入失敗，忽略快取`, error);
         }
     }
 
@@ -106,13 +121,11 @@ window.DataService = (() => {
             return memoryCache.get(action);
         }
 
-        if (action === 'getPersons') {
-            const cached = getPersonsSessionCache();
-            if (cached) {
-                memoryCache.set(action, cached);
-                debugLog('使用人員主檔 session 快取', { count: cached.length });
-                return cached;
-            }
+        const cached = getSessionCache(action);
+        if (cached) {
+            memoryCache.set(action, cached);
+            debugLog('使用 session 快取', { action, count: cached.length });
+            return cached;
         }
 
         return undefined;
@@ -124,22 +137,27 @@ window.DataService = (() => {
         }
 
         memoryCache.set(action, data);
-        if (action === 'getPersons') {
-            setPersonsSessionCache(data);
-        }
+        setSessionCache(action, data);
     }
 
     function clearCache(action) {
         if (action) {
             memoryCache.delete(action);
-            if (action === 'getPersons') {
-                sessionStorage.removeItem(personsSessionCacheKey);
-            }
+            sessionStorage.removeItem(sessionCacheKey(action));
             return;
         }
 
         memoryCache.clear();
-        sessionStorage.removeItem(personsSessionCacheKey);
+        readActions.forEach(readAction => {
+            sessionStorage.removeItem(sessionCacheKey(readAction));
+        });
+    }
+
+    function setCachedData(action, data) {
+        if (!readActions.has(action)) {
+            throw new Error(`不可快取非讀取 action：${action}`);
+        }
+        setCached(action, data);
     }
 
     async function request(action, payload = {}) {
@@ -165,7 +183,7 @@ window.DataService = (() => {
             if (!AppConfig.USE_ONLINE_DATA) {
                 if (dutyMutationActions.has(action)) {
                     const result = await mutateDuty(action, payload);
-                    memoryCache.delete('getDuties');
+                    clearCache('getDuties');
                     return result;
                 }
 
@@ -178,7 +196,7 @@ window.DataService = (() => {
             setCached(action, result);
 
             if (dutyMutationActions.has(action)) {
-                memoryCache.delete('getDuties');
+                clearCache('getDuties');
             }
 
             return result;
@@ -379,7 +397,7 @@ window.DataService = (() => {
         }
 
         localStorage.setItem('vf_duties', JSON.stringify(rows));
-        return true;
+        return action === 'deleteDuty' ? true : payload.record;
     }
 
     function normalizeAjaxError(error) {
@@ -424,6 +442,7 @@ window.DataService = (() => {
     return Object.freeze({
         request,
         requestBundle,
-        clearCache
+        clearCache,
+        setCachedData
     });
 })();
