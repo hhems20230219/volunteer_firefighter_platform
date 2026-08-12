@@ -1,6 +1,6 @@
 window.AppConfig = Object.freeze({
     USE_ONLINE_DATA: false,
-    API_BASE_URL: 'https://script.google.com/macros/s/REPLACE_WITH_DEPLOYMENT_ID/exec',
+    API_BASE_URL: 'https://script.google.com/macros/s/AKfycbzk2-6yDqpjL3ktXJZQKdyTcCWuKySf8GNsMzd70T45pneIHWkltAsmAPdq3y8kOLrQ/exec',
     API_TIMEOUT_MS: 20000,
     API_READ_RETRY_COUNT: 2,
     API_RETRY_BASE_DELAY_MS: 1200,
