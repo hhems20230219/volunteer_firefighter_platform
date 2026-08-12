@@ -331,7 +331,35 @@ window.DataService = (() => {
         );
 
         if (action === 'createDuty') {
-            rows.push(payload.record);
+            const record = payload.record || {};
+            const duplicate = record.checkInDate && record.checkInTime
+                ? rows.some(row => (
+                    row.nationalId === record.nationalId
+                    && row.dutyType === record.dutyType
+                    && row.serviceType === record.serviceType
+                    && row.checkInDate === record.checkInDate
+                    && row.checkInTime === record.checkInTime
+                ))
+                : false;
+
+            if (duplicate) {
+                throw new Error('系統偵測到相同的簽到紀錄已存在，已阻止重複新增。請重新整理頁面確認目前勤務狀態。');
+            }
+
+            const requiresCheckOut = record.dutyType === '協勤' || record.dutyType === '公差勤務';
+            const pending = requiresCheckOut
+                ? rows.some(row => (
+                    row.nationalId === record.nationalId
+                    && (row.dutyType === '協勤' || row.dutyType === '公差勤務')
+                    && (!row.checkOutDate || !row.checkOutTime)
+                ))
+                : false;
+
+            if (pending) {
+                throw new Error('目前已有一筆勤務尚未簽退，已阻止重複簽到。請先完成簽退。');
+            }
+
+            rows.push(record);
         }
 
         if (action === 'updateDuty') {

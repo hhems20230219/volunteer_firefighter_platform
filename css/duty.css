@@ -208,3 +208,26 @@
         font-weight: 900;
     }
 }
+
+
+/* v34：勤務簽到／簽退結果提示與送出防連點狀態。 */
+.duty-result-toast-container {
+    z-index: 2000;
+    width: min(94vw, 34rem);
+}
+
+#dutyResultToast {
+    width: 100%;
+    max-width: none;
+}
+
+#dutyResultToast .toast-body {
+    background: #fff;
+    color: #212529;
+    line-height: 1.55;
+}
+
+#submitBtn:disabled {
+    cursor: wait;
+    opacity: .8;
+}

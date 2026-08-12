@@ -5,6 +5,7 @@ $(() => {
     let formMode = 'checkIn'; // checkIn | checkOut | edit
     let locationVerified = false;
     let clockTimer = null;
+    let isSubmitting = false;
 
     const modal = new bootstrap.Modal('#dutyModal');
     const canvas = document.getElementById('signatureCanvas');
@@ -74,6 +75,52 @@ $(() => {
 
     function currentPerson() {
         return window.AppAccess?.currentUser || Common.resolveCurrentUser(persons);
+    }
+
+    function operationLabel() {
+        if (formMode === 'checkOut') return '簽退';
+        if (formMode === 'edit') return '修改';
+        return '簽到';
+    }
+
+    function setSubmitState(submitting) {
+        isSubmitting = submitting;
+        const label = operationLabel();
+        const $button = $('#submitBtn');
+
+        $button.prop('disabled', submitting);
+        $('#dutyModal [data-bs-dismiss="modal"], #getLocationBtn, #clearSignatureBtn')
+            .prop('disabled', submitting);
+
+        if (submitting) {
+            $button.html(`<i class="fa-solid fa-hourglass-half me-1"></i>${label}處理中…`);
+            return;
+        }
+
+        updateFormUi();
+    }
+
+    function showOperationResult({ success, title, message }) {
+        const $toast = $('#dutyResultToast');
+        const $header = $('#dutyResultToastHeader');
+        const $icon = $('#dutyResultToastIcon');
+        const $title = $('#dutyResultToastTitle');
+        const $message = $('#dutyResultToastMessage');
+
+        $toast.removeClass('text-bg-success text-bg-danger')
+            .addClass(success ? 'text-bg-success' : 'text-bg-danger');
+        $header.removeClass('text-bg-success text-bg-danger')
+            .addClass(success ? 'text-bg-success' : 'text-bg-danger');
+        $icon.attr('class', success
+            ? 'fa-solid fa-circle-check me-2'
+            : 'fa-solid fa-circle-xmark me-2');
+        $title.text(title);
+        $message.text(message);
+
+        bootstrap.Toast.getOrCreateInstance($toast[0], {
+            autohide: success,
+            delay: 8000
+        }).show();
     }
 
     function availableFormPersons() {
@@ -714,26 +761,70 @@ $(() => {
 
     $('#dutyForm').on('submit', async event => {
         event.preventDefault();
+
+        if (isSubmitting) {
+            Common.log('Duty', '忽略重複送出：上一筆勤務操作仍在處理中', { formMode });
+            return;
+        }
+
         const message = validate();
         if (message) {
-            alert(message);
+            showOperationResult({
+                success: false,
+                title: `${operationLabel()}未送出`,
+                message
+            });
             return;
         }
 
         const record = buildRecord();
         const isCreate = formMode === 'checkIn';
         const action = isCreate ? 'createDuty' : 'updateDuty';
-        Common.log('Duty', `${formMode === 'checkIn' ? '簽到' : formMode === 'checkOut' ? '簽退' : '修改'}勤務送出`, record);
+        const submittedMode = formMode;
+        const submittedLabel = operationLabel();
+        const submittedPerson = selectedFormPerson() || currentPerson();
+        const submittedDate = submittedMode === 'checkOut' ? record.checkOutDate : record.checkInDate;
+        const submittedTime = submittedMode === 'checkOut' ? record.checkOutTime : record.checkInTime;
 
-        await DataService.request(action, {
-            originalNationalId: record.nationalId,
-            originalName: record.name,
-            originalCreatedAt: $('#originalCreatedAt').val(),
-            record
-        });
+        Common.log('Duty', `${submittedLabel}勤務送出`, record);
+        setSubmitState(true);
 
-        modal.hide();
-        await load();
+        try {
+            await DataService.request(action, {
+                originalNationalId: record.nationalId,
+                originalName: record.name,
+                originalCreatedAt: $('#originalCreatedAt').val(),
+                record
+            });
+
+            modal.hide();
+
+            showOperationResult({
+                success: true,
+                title: `${submittedLabel}成功`,
+                message: `${submittedPerson?.name || record.name || '人員'} 已於 ${submittedDate || '-'} ${submittedTime || '-'} 完成${submittedLabel}。`
+            });
+
+            try {
+                await load();
+            } catch (refreshError) {
+                console.error('[Duty] 勤務已儲存，但重新載入資料失敗', refreshError);
+                showOperationResult({
+                    success: false,
+                    title: `${submittedLabel}已完成，但畫面更新失敗`,
+                    message: `資料已送出，重新載入失敗：${refreshError.message}。請重新整理頁面確認。`
+                });
+            }
+        } catch (error) {
+            console.error(`[Duty] ${submittedLabel}失敗`, error);
+            showOperationResult({
+                success: false,
+                title: `${submittedLabel}失敗`,
+                message: error.message || '勤務資料送出失敗，請稍後再試。'
+            });
+        } finally {
+            setSubmitState(false);
+        }
     });
 
     function point(event) {
