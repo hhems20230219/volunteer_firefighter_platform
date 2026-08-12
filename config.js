@@ -1,5 +1,5 @@
 window.AppConfig = Object.freeze({
-    USE_ONLINE_DATA: false,
+    USE_ONLINE_DATA: true,
     API_BASE_URL: 'https://script.google.com/macros/s/AKfycbzk2-6yDqpjL3ktXJZQKdyTcCWuKySf8GNsMzd70T45pneIHWkltAsmAPdq3y8kOLrQ/exec',
     API_TIMEOUT_MS: 20000,
     API_READ_RETRY_COUNT: 2,
