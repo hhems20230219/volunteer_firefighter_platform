@@ -374,17 +374,17 @@ $(() => {
 
         initializeFilters();
 
-        const result = await Promise.all([
-            DataService.request('getPersons'),
-            DataService.request('getDuties')
-        ]);
+        const data = await Common.withLoading(
+            () => DataService.requestBundle(['getPersons', 'getDuties']),
+            '隊務統計載入中，請稍候…'
+        );
 
-        persons = result[0].filter(person => (
+        persons = (data.getPersons || access.visiblePersons).filter(person => (
             person.brigade === access.currentUser.brigade
             && person.unit === access.currentUser.unit
         ));
 
-        duties = result[1].filter(duty => (
+        duties = (data.getDuties || []).filter(duty => (
             persons.some(person => personMatchesDuty(person, duty))
         ));
 

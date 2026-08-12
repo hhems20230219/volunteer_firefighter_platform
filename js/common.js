@@ -23,6 +23,47 @@ window.Common = (() => {
         else console.log(`[${scope}] ${message}`, data);
     }
 
+    let loadingDepth = 0;
+
+    function showLoading(message = '資料載入中，請稍候…') {
+        loadingDepth += 1;
+        let mask = $('#appLoadingMask');
+        if (!mask.length) {
+            $('body').append(`
+                <div class="app-loading-mask" id="appLoadingMask" role="status" aria-live="polite">
+                    <div class="app-loading-panel">
+                        <div class="fw-bold app-loading-message"></div>
+                        <div class="small text-secondary mt-1">若 Google Sheet 暫時回應較慢，系統會自動重試。</div>
+                        <div class="app-loading-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+                    </div>
+                </div>
+            `);
+            mask = $('#appLoadingMask');
+        }
+        mask.find('.app-loading-message').text(message);
+        mask.removeClass('d-none');
+    }
+
+    function updateLoading(message) {
+        $('#appLoadingMask .app-loading-message').text(message || '資料載入中，請稍候…');
+    }
+
+    function hideLoading(force = false) {
+        loadingDepth = force ? 0 : Math.max(0, loadingDepth - 1);
+        if (loadingDepth === 0) {
+            $('#appLoadingMask').addClass('d-none');
+        }
+    }
+
+    async function withLoading(task, message = '資料載入中，請稍候…') {
+        showLoading(message);
+        try {
+            return await task();
+        } finally {
+            hideLoading();
+        }
+    }
+
     function escapeHtml(value) { return $('<div>').text(value ?? '').html(); }
     function formatTimestamp(date = new Date()) {
         const pad = value => String(value).padStart(2, '0');
@@ -216,6 +257,7 @@ window.Common = (() => {
         $('[data-action="logout"]').on('click', () => {
             log('Auth', '登出', { name: context.currentUser.name });
             sessionStorage.removeItem(AppConfig.AUTH_STORAGE_KEY);
+            DataService.clearCache();
             location.replace('login.html');
         });
     }
@@ -223,6 +265,7 @@ window.Common = (() => {
         $('main').html(`<div class="container py-5"><section class="card border-0 shadow-sm access-denied-card"><div class="card-body p-4 p-lg-5 text-center"><div class="access-denied-icon mx-auto mb-3"><i class="fa-solid fa-lock"></i></div><h1 class="h3 fw-bold">沒有隊務統計權限</h1><p class="text-secondary mb-4">個人權限只能查看自己的個人資料。</p><a class="btn btn-danger" href="query.html">查看我的資料</a></div></section></div>`);
     }
     async function loadLayout() {
+        showLoading('登入資料確認中，請稍候…');
         try {
             requireAuth();
             const [navbarHtml, footerHtml, persons] = await Promise.all([$.get('navbar.html'), $.get('footer.html'), DataService.request('getPersons')]);
@@ -261,8 +304,11 @@ window.Common = (() => {
             $('#forceReloginBtn').on('click', () => {
                 log('Auth', '清除失效登入狀態並返回登入頁');
                 sessionStorage.removeItem(AppConfig.AUTH_STORAGE_KEY);
+                DataService.clearCache('getPersons');
                 location.replace('login.html');
             });
+        } finally {
+            hideLoading();
         }
     }
     $(window).on('resize orientationchange', () => {
@@ -289,7 +335,11 @@ window.Common = (() => {
         createResponsiveDataTable,
         recalcResponsiveTable,
         recalcAllResponsiveTables,
-        scheduleResponsiveTablesRecalc
+        scheduleResponsiveTablesRecalc,
+        showLoading,
+        updateLoading,
+        hideLoading,
+        withLoading
     };
 })();
 $(Common.loadLayout);

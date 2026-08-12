@@ -15,7 +15,7 @@ $(() => {
         }
     }
 
-    DataService.request('getAnnouncements').then(rows => {
+    Common.withLoading(() => DataService.request('getAnnouncements'), '公告資料載入中，請稍候…').then(rows => {
         const sortedRows = [...rows].sort((left, right) =>
             String(right.date || '').localeCompare(String(left.date || ''))
         );

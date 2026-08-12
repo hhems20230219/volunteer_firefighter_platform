@@ -1,9 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-dark app-navbar sticky-top">
-    <div class="container-fluid px-3">
-        <a class="navbar-brand fw-bold" href="index.html">
-            <i class="fa-solid fa-shield-heart me-2" aria-hidden="true"></i>
-            <span>新興救護義消隊務管理平台</span>
-        </a>
+    <div class="container-fluid px-3 app-navbar-layout">
+        <div class="app-navbar-first-row">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="fa-solid fa-shield-heart me-2" aria-hidden="true"></i>
+                <span>新興救護義消隊務管理系統</span>
+            </a>
+        </div>
 
         <div class="desktop-navbar-content d-none d-lg-flex align-items-center ms-auto">
             <a class="nav-link" data-page-link="index" href="index.html">
@@ -32,7 +34,7 @@
             </button>
         </div>
 
-        <div class="mobile-navbar-content d-lg-none ms-auto" aria-label="目前登入者資訊">
+        <div class="mobile-navbar-content d-lg-none" aria-label="目前登入者資訊">
             <span class="mobile-navbar-info">
                 <i class="fa-solid fa-building-shield" aria-hidden="true"></i>
                 <span data-current-user-department></span>
@@ -45,9 +47,8 @@
                 <i class="fa-solid fa-user" aria-hidden="true"></i>
                 <span data-current-user-name></span>
             </span>
-            <button type="button" class="btn btn-sm btn-outline-light mobile-navbar-logout" data-action="logout">
+            <button type="button" class="btn btn-sm btn-outline-light mobile-navbar-logout" data-action="logout" aria-label="登出" title="登出">
                 <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-                <span>登出</span>
             </button>
         </div>
     </div>

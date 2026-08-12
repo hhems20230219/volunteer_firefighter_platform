@@ -728,25 +728,25 @@ $(() => {
 
     async function initialize() {
         const access = await Common.ready;
-        const result = await Promise.all([
-            DataService.request('getPersons'),
-            DataService.request('getDuties'),
-            DataService.request('getTraining'),
-            DataService.request('getMemberRecords'),
-            DataService.request('getAwards'),
-            DataService.request('getTrainingRules'),
-            DataService.request('getAwardRules'),
-            DataService.request('getCertificates')
-        ]);
+        const data = await Common.withLoading(() => DataService.requestBundle([
+            'getPersons',
+            'getDuties',
+            'getTraining',
+            'getMemberRecords',
+            'getAwards',
+            'getTrainingRules',
+            'getAwardRules',
+            'getCertificates'
+        ]), '個人資料載入中，請稍候…');
 
-        const allPersons = result[0];
-        duties = result[1];
-        trainings = result[2];
-        records = result[3];
-        awards = result[4];
-        trainingRules = result[5];
-        awardRules = result[6];
-        certificates = result[7];
+        const allPersons = data.getPersons || access.visiblePersons;
+        duties = data.getDuties || [];
+        trainings = data.getTraining || [];
+        records = data.getMemberRecords || [];
+        awards = data.getAwards || [];
+        trainingRules = data.getTrainingRules || [];
+        awardRules = data.getAwardRules || [];
+        certificates = data.getCertificates || [];
 
         persons = access.isStationOffice
             ? allPersons.filter(person => (

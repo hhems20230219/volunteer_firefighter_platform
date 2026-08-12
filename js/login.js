@@ -18,7 +18,7 @@ $(() => {
 
         $('#loginBtn')
             .prop('disabled', true)
-            .html('<span class="spinner-border spinner-border-sm me-2"></span>登入中');
+            .html('<i class="fa-solid fa-hourglass-half me-2"></i>登入中…');
 
         try {
             debug('開始查找登入者', { nationalId });

@@ -17,6 +17,11 @@ window.DataService = (() => {
         'deleteDuty'
     ]);
 
+    const readActions = new Set(Object.keys(files));
+    const memoryCache = new Map();
+    const inFlightRequests = new Map();
+    const personsSessionCacheKey = 'vf_cache_getPersons';
+
     async function getSample(action) {
         if (!files[action]) {
             throw new Error(`範例模式不支援 action：${action}`);
@@ -61,6 +66,82 @@ window.DataService = (() => {
         return $.getJSON(`data/${files[action]}`);
     }
 
+    function getPersonsSessionCache() {
+        try {
+            const cached = JSON.parse(sessionStorage.getItem(personsSessionCacheKey) || 'null');
+            if (!cached || !Array.isArray(cached.data) || !cached.savedAt) {
+                return null;
+            }
+
+            const ttl = Number(AppConfig.PERSON_CACHE_TTL_MS) || 300000;
+            if (Date.now() - Number(cached.savedAt) > ttl) {
+                sessionStorage.removeItem(personsSessionCacheKey);
+                return null;
+            }
+
+            return cached.data;
+        } catch {
+            sessionStorage.removeItem(personsSessionCacheKey);
+            return null;
+        }
+    }
+
+    function setPersonsSessionCache(rows) {
+        if (!Array.isArray(rows)) {
+            return;
+        }
+
+        try {
+            sessionStorage.setItem(personsSessionCacheKey, JSON.stringify({
+                savedAt: Date.now(),
+                data: rows
+            }));
+        } catch (error) {
+            debugLog('人員主檔 session 快取寫入失敗，忽略快取', error);
+        }
+    }
+
+    function getCached(action) {
+        if (memoryCache.has(action)) {
+            return memoryCache.get(action);
+        }
+
+        if (action === 'getPersons') {
+            const cached = getPersonsSessionCache();
+            if (cached) {
+                memoryCache.set(action, cached);
+                debugLog('使用人員主檔 session 快取', { count: cached.length });
+                return cached;
+            }
+        }
+
+        return undefined;
+    }
+
+    function setCached(action, data) {
+        if (!readActions.has(action)) {
+            return;
+        }
+
+        memoryCache.set(action, data);
+        if (action === 'getPersons') {
+            setPersonsSessionCache(data);
+        }
+    }
+
+    function clearCache(action) {
+        if (action) {
+            memoryCache.delete(action);
+            if (action === 'getPersons') {
+                sessionStorage.removeItem(personsSessionCacheKey);
+            }
+            return;
+        }
+
+        memoryCache.clear();
+        sessionStorage.removeItem(personsSessionCacheKey);
+    }
+
     async function request(action, payload = {}) {
         debugLog('Request', {
             action,
@@ -68,51 +149,181 @@ window.DataService = (() => {
             payload
         });
 
-        if (!AppConfig.USE_ONLINE_DATA) {
-            if (dutyMutationActions.has(action)) {
-                return mutateDuty(action, payload);
+        if (readActions.has(action)) {
+            const cached = getCached(action);
+            if (cached !== undefined) {
+                return cached;
             }
-            return getSample(action);
+
+            if (inFlightRequests.has(action)) {
+                debugLog('共用進行中的讀取要求', { action });
+                return inFlightRequests.get(action);
+            }
         }
 
-        return requestOnline(action, payload);
+        const promise = (async () => {
+            if (!AppConfig.USE_ONLINE_DATA) {
+                if (dutyMutationActions.has(action)) {
+                    const result = await mutateDuty(action, payload);
+                    memoryCache.delete('getDuties');
+                    return result;
+                }
+
+                const result = await getSample(action);
+                setCached(action, result);
+                return result;
+            }
+
+            const result = await requestOnline(action, payload, readActions.has(action));
+            setCached(action, result);
+
+            if (dutyMutationActions.has(action)) {
+                memoryCache.delete('getDuties');
+            }
+
+            return result;
+        })();
+
+        if (readActions.has(action)) {
+            inFlightRequests.set(action, promise);
+        }
+
+        try {
+            return await promise;
+        } finally {
+            if (inFlightRequests.get(action) === promise) {
+                inFlightRequests.delete(action);
+            }
+        }
     }
 
-    async function requestOnline(action, payload) {
+    async function requestBundle(actions) {
+        const requestedActions = [...new Set((actions || []).map(String).filter(Boolean))];
+        if (!requestedActions.length) {
+            return {};
+        }
+
+        requestedActions.forEach(action => {
+            if (!readActions.has(action)) {
+                throw new Error(`批次讀取不支援 action：${action}`);
+            }
+        });
+
+        const result = {};
+        const missingActions = [];
+
+        requestedActions.forEach(action => {
+            const cached = getCached(action);
+            if (cached !== undefined) {
+                result[action] = cached;
+            } else {
+                missingActions.push(action);
+            }
+        });
+
+        if (!missingActions.length) {
+            debugLog('批次讀取全部命中快取', { actions: requestedActions });
+            return result;
+        }
+
+        if (!AppConfig.USE_ONLINE_DATA) {
+            const rows = await Promise.all(missingActions.map(action => getSample(action)));
+            missingActions.forEach((action, index) => {
+                result[action] = rows[index];
+                setCached(action, rows[index]);
+            });
+            return result;
+        }
+
+        debugLog('送出單次批次讀取', { actions: missingActions });
+        const bundle = await requestOnline('getBundle', { actions: missingActions }, true);
+
+        missingActions.forEach(action => {
+            const data = bundle?.[action] ?? [];
+            result[action] = data;
+            setCached(action, data);
+        });
+
+        return result;
+    }
+
+    async function requestOnline(action, payload, canRetry) {
         if (!AppConfig.API_BASE_URL || AppConfig.API_BASE_URL.includes('REPLACE_WITH_DEPLOYMENT_ID')) {
             throw new Error('尚未設定 Google Apps Script API_BASE_URL。');
         }
 
-        try {
-            const response = await $.ajax({
-                url: AppConfig.API_BASE_URL,
-                method: 'POST',
-                contentType: 'text/plain;charset=utf-8',
-                dataType: 'json',
-                timeout: Number(AppConfig.API_TIMEOUT_MS) || 30000,
-                data: JSON.stringify({ action, payload })
-            });
+        const retryCount = canRetry ? Math.max(0, Number(AppConfig.API_READ_RETRY_COUNT) || 0) : 0;
+        let lastError = null;
 
-            if (response?.success === false) {
-                throw new Error(response.message || 'Google Sheet API 操作失敗。');
+        for (let attempt = 0; attempt <= retryCount; attempt += 1) {
+            try {
+                const response = await $.ajax({
+                    url: AppConfig.API_BASE_URL,
+                    method: 'POST',
+                    contentType: 'text/plain;charset=utf-8',
+                    dataType: 'json',
+                    timeout: Number(AppConfig.API_TIMEOUT_MS) || 20000,
+                    data: JSON.stringify({ action, payload })
+                });
+
+                if (response?.success === false) {
+                    throw createResponseError(response.message || 'Google Sheet API 操作失敗。');
+                }
+
+                const result = response?.data ?? response;
+                debugLog('Response', { action, attempt: attempt + 1, result });
+                return result;
+            } catch (error) {
+                lastError = error;
+                const retryable = canRetry && isRetryableError(error) && attempt < retryCount;
+
+                console.error('[DataService] Online request failed', {
+                    action,
+                    attempt: attempt + 1,
+                    retryable,
+                    message: normalizeAjaxError(error),
+                    error
+                });
+
+                if (!retryable) {
+                    break;
+                }
+
+                const delay = (Number(AppConfig.API_RETRY_BASE_DELAY_MS) || 1200) * Math.pow(2, attempt);
+                debugLog('Google Sheet API 暫時失敗，準備重試', {
+                    action,
+                    nextAttempt: attempt + 2,
+                    delay
+                });
+                await sleep(delay);
             }
-
-            const result = response?.data ?? response;
-            debugLog('Response', { action, result });
-            return result;
-        } catch (error) {
-            const message = normalizeAjaxError(error);
-            console.error('[DataService] Online request failed', {
-                action,
-                message,
-                error
-            });
-            throw new Error(message);
         }
+
+        throw new Error(normalizeAjaxError(lastError));
+    }
+
+    function createResponseError(message) {
+        const error = new Error(message);
+        error.isApiResponseError = true;
+        return error;
+    }
+
+    function isRetryableError(error) {
+        if (!error || error.isApiResponseError) {
+            return false;
+        }
+
+        return error.statusText === 'timeout'
+            || error.status === 0
+            || Number(error.status) >= 500;
+    }
+
+    function sleep(milliseconds) {
+        return new Promise(resolve => window.setTimeout(resolve, milliseconds));
     }
 
     async function mutateDuty(action, payload) {
-        const rows = await getSample('getDuties');
+        const rows = [...await getSample('getDuties')];
         const keyMatch = row => (
             row.nationalId === payload.originalNationalId
             && row.name === payload.originalName
@@ -149,11 +360,11 @@ window.DataService = (() => {
         }
 
         if (error?.statusText === 'timeout') {
-            return 'Google Sheet API 連線逾時，請稍後再試。';
+            return 'Google Sheet API 連線逾時，系統已自動重試仍未成功，請稍後再試。';
         }
 
         if (error?.status === 0) {
-            return '無法連線 Google Apps Script API，請確認部署權限與網址。';
+            return '無法連線 Google Apps Script API，系統已自動重試；請確認網路、部署權限與 API 網址。';
         }
 
         if (error?.responseText) {
@@ -182,5 +393,9 @@ window.DataService = (() => {
         }
     }
 
-    return Object.freeze({ request });
+    return Object.freeze({
+        request,
+        requestBundle,
+        clearCache
+    });
 })();

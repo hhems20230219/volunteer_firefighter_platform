@@ -330,7 +330,7 @@ $(() => {
         setLocationState('idle');
         $('#getLocationBtn')
             .prop('disabled', true)
-            .html('<span class="spinner-border spinner-border-sm me-2"></span>定位中');
+            .html('<i class="fa-solid fa-location-crosshairs me-2"></i>定位中…');
 
         navigator.geolocation.getCurrentPosition(position => {
             const result = findAllowedLocation(position.coords.latitude, position.coords.longitude);
@@ -660,13 +660,14 @@ $(() => {
     }
 
     async function load() {
-        await Common.ready;
-        [persons, duties] = await Promise.all([
-            DataService.request('getPersons'),
-            DataService.request('getDuties')
-        ]);
-        Common.log('Duty', '資料載入完成', { persons: persons.length, duties: duties.length });
-        render();
+        const access = await Common.ready;
+        await Common.withLoading(async () => {
+            const data = await DataService.requestBundle(['getPersons', 'getDuties']);
+            persons = data.getPersons || access.visiblePersons;
+            duties = data.getDuties || [];
+            Common.log('Duty', '資料載入完成', { persons: persons.length, duties: duties.length });
+            render();
+        }, '出勤紀錄載入中，請稍候…');
 
         const target = JSON.parse(sessionStorage.getItem('vfDutyTarget') || 'null');
         if (target?.createdAt) {
